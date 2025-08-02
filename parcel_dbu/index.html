@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway Parcel Services - Mysuru Division, South Western Railway</title>
+    <meta name="description" content="Fast, Affordable & Nationwide Parcel Transportation Services by Mysuru Division, South Western Railway. Book online for competitive rates and eco-friendly logistics.">
+    <meta name="keywords" content="railway parcel, mysuru railway, south western railway, parcel booking, freight services, kisan rail, door to door delivery">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Parcel Calc">
+    <meta name="msapplication-TileColor" content="#1e40af">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Parcel Calculator">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Using Tailwind CSS CDN for simplicity - suitable for this project -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-900 text-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-train text-blue-900 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">भारतीय रेल</h1>
+                        <p class="text-sm text-blue-200">INDIAN RAILWAYS</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="hover:text-blue-300 transition">Home</a>
+                    <a href="#services" class="hover:text-blue-300 transition">Services</a>
+                    <a href="calculator.html" class="hover:text-blue-300 transition">Rate Calculator</a>
+                    <a href="routes.html" class="hover:text-blue-300 transition">Route Table</a>
+                    <a href="jpp.html" class="hover:text-blue-300 transition">JPP</a>
+                    <a href="pwa-test.html" class="hover:text-blue-300 transition">PWA Test</a>
+                    <a href="#contact" class="hover:text-blue-300 transition">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-blue-800">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#home" class="block px-3 py-2 hover:bg-blue-700">Home</a>
+                <a href="#services" class="block px-3 py-2 hover:bg-blue-700">Services</a>
+                <a href="calculator.html" class="block px-3 py-2 hover:bg-blue-700">Rate Calculator</a>
+                <a href="routes.html" class="block px-3 py-2 hover:bg-blue-700">Route Table</a>
+                <a href="jpp.html" class="block px-3 py-2 hover:bg-blue-700">JPP</a>
+                <a href="pwa-test.html" class="block px-3 py-2 hover:bg-blue-700">PWA Test</a>
+                <a href="#contact" class="block px-3 py-2 hover:bg-blue-700">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-20 bg-gradient-to-br from-blue-900 via-purple-900 to-blue-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                    Railway's Parcel Transportation Services
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-200">
+                    Fast, Affordable & Nationwide - Your Trusted Logistic Partner
+                </p>
+                <div class="bg-green-600 inline-block px-6 py-3 rounded-lg mb-8">
+                    <h2 class="text-xl font-semibold">Mysuru Division, South Western Railway</h2>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="calculator.html" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300">
+                        <i class="fas fa-calculator mr-2"></i>Calculate Rates
+                    </a>
+                    <a href="#services" class="bg-transparent border-2 border-white hover:bg-white hover:text-blue-900 text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300">
+                        <i class="fas fa-info-circle mr-2"></i>Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section id="services" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Services Offered</h2>
+                <p class="text-xl text-gray-600">Comprehensive parcel solutions for every sector</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Counter Booking -->
+                <div class="bg-white rounded-lg shadow-lg p-6 border-t-4 border-blue-600 hover:shadow-xl transition duration-300 service-card">
+                    <div class="text-center">
+                        <i class="fas fa-ticket-alt text-4xl text-blue-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3">Counter Booking</h3>
+                        <p class="text-gray-600 mb-4">Save up to 40% compared to road transport with transparent pricing</p>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Competitive Rates</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Swift Transit (24-48 hours)</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Eco-Friendly Choice</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Safe & Secure Handling</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Easy Booking Access</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Leasing Services -->
+                <div class="bg-white rounded-lg shadow-lg p-6 border-t-4 border-green-600 hover:shadow-xl transition duration-300 service-card">
+                    <div class="text-center">
+                        <i class="fas fa-train text-4xl text-green-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3">Leasing of Parcel Spaces [SLR & VPH]</h3>
+                        <p class="text-gray-600 mb-4">Lease SLR & VPH spaces for bulk shipments and consistent logistics</p>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>High Volume Advantage</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Commercial Viability</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Assured Timetables</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Exclusive Access</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Simple Bidding Process</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Door-to-Door -->
+                <div class="bg-white rounded-lg shadow-lg p-6 border-t-4 border-purple-600 hover:shadow-xl transition duration-300 service-card">
+                    <div class="text-center">
+                        <i class="fas fa-home text-4xl text-purple-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3">Joint Parcel Product</h3>
+                        <p class="text-gray-600 mb-4">In collaboration with India Post & Authorized Aggregator Partners</p>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Door-to-Door Convenience</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Time-Tabled Rapid Transit</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Aggregator-Friendly Platform</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Transparent Pricing</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Insurance Coverage</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Kisan Rail -->
+                <div class="bg-white rounded-lg shadow-lg p-6 border-t-4 border-orange-600 hover:shadow-xl transition duration-300 service-card">
+                    <div class="text-center">
+                        <i class="fas fa-leaf text-4xl text-orange-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3">Kisan Parcel Trains (Kisan Rail)</h3>
+                        <p class="text-gray-600 mb-4">Specialized service for farmers with 50% freight subsidy</p>
+                        <ul class="text-sm text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>50% Freight Subsidy</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Refrigerated Vans</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Time-Tabled Services</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Expanded Market Access</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>Farmer-Friendly Booking</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="py-16 bg-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Rate Calculation Tools</h2>
+                <p class="text-xl text-gray-600">Get accurate rates for your parcel shipments</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300">
+                    <i class="fas fa-calculator text-5xl text-blue-600 mb-6"></i>
+                    <h3 class="text-2xl font-semibold mb-4">Rate Calculator</h3>
+                    <p class="text-gray-600 mb-6">Calculate parcel rates for any distance and weight using official railway scales</p>
+                    <a href="calculator.html" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+                        <i class="fas fa-arrow-right mr-2"></i>Calculate Rates
+                    </a>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300">
+                    <i class="fas fa-route text-5xl text-green-600 mb-6"></i>
+                    <h3 class="text-2xl font-semibold mb-4">Route Table</h3>
+                    <p class="text-gray-600 mb-6">View complete rate table for all routes from Davangere with custom route options</p>
+                    <a href="routes.html" class="inline-block bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300">
+                        <i class="fas fa-arrow-right mr-2"></i>View Routes
+                    </a>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition duration-300">
+                    <i class="fas fa-mobile-alt text-5xl text-purple-600 mb-6"></i>
+                    <h3 class="text-2xl font-semibold mb-4">Install App</h3>
+                    <p class="text-gray-600 mb-6">Install this app on your device for quick access and offline functionality</p>
+                    <button id="manual-install-btn" class="inline-block bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300">
+                        <i class="fas fa-download mr-2"></i>Install App
+                    </button>
+                    <p class="text-xs text-gray-500 mt-3">Install prompts will only appear once per day</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Suitable Consignments -->
+    <section class="py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Suitable Consignments</h2>
+                <p class="text-xl text-gray-600">We handle a wide variety of goods efficiently</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-green-600">
+                        <i class="fas fa-apple-alt mr-2"></i>Perishables
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>• Fruits, vegetables</li>
+                        <li>• Dairy</li>
+                        <li>• Fish</li>
+                        <li>• Flowers</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-600">
+                        <i class="fas fa-box mr-2"></i>Consumer Goods
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>• Electronics</li>
+                        <li>• Textiles</li>
+                        <li>• FMCG</li>
+                        <li>• E-commerce Parcels</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <h3 class="text-xl font-semibold mb-4 text-purple-600">
+                        <i class="fas fa-motorcycle mr-2"></i>Personal Items
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>• Household articles</li>
+                        <li>• Two-wheelers</li>
+                        <li>• Documents</li>
+                        <li>• Industrial Goods</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Digital Convenience & Sustainability -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="bg-blue-50 rounded-lg p-8">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6">Digital Convenience & Sustainability</h3>
+                    <ul class="space-y-4 text-blue-800">
+                        <li class="flex items-start">
+                            <i class="fas fa-mobile-alt text-xl mr-4 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold">Fully Digital Platforms</h4>
+                                <p>Digital booking, tracking, and payment platforms for reduced delays and enhanced user ease.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-leaf text-xl mr-4 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold">Green Logistics</h4>
+                                <p>Supported by electric traction and shared parcel space, leading to reduced emissions and fuel usage.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-50 rounded-lg p-8">
+                    <h3 class="text-2xl font-bold text-green-900 mb-6">Perfect for Every Sector</h3>
+                    <p class="text-green-800 mb-4">SMEs, online retailers, farmers, individuals, and government agencies can benefit from reliable, scalable, and cost-efficient logistics tailored to diverse shipping needs.</p>
+                    <ul class="space-y-2 text-green-800">
+                        <li>• Small & Medium Enterprises</li>
+                        <li>• Online Retailers</li>
+                        <li>• Farmers</li>
+                        <li>• Individuals</li>
+                        <li>• Government Agencies</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-blue-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Contact Us</h2>
+                <p class="text-xl text-blue-200">Get in touch for any queries or support</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">Get In Touch</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center contact-info-item">
+                            <i class="fab fa-whatsapp text-2xl text-green-400 mr-4"></i>
+                            <div>
+                                <p class="font-semibold">WhatsApp</p>
+                                <p class="text-blue-200">+91-9731667962</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center contact-info-item">
+                            <i class="fas fa-envelope text-2xl text-blue-400 mr-4"></i>
+                            <div>
+                                <p class="font-semibold">Email</p>
+                                <p class="text-blue-200">cmiaskswrmys@gmail.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start contact-info-item">
+                            <i class="fas fa-map-marker-alt text-2xl text-red-400 mr-4 mt-1"></i>
+                            <div>
+                                <p class="font-semibold">Address</p>
+                                <p class="text-blue-200">Freight Business Help Desk, Commercial Branch, DRM Office Building, Opp. Mysuru Jn Railway Station, Irwin Road, Mysuru - 570001</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">Send Message</h3>
+                    <form id="contact-form" class="space-y-4">
+                        <div>
+                            <input type="text" name="name" placeholder="Your Name" class="w-full px-4 py-3 bg-blue-800 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-white placeholder-blue-300" required>
+                        </div>
+                        <div>
+                            <input type="email" name="email" placeholder="Your Email" class="w-full px-4 py-3 bg-blue-800 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-white placeholder-blue-300" required>
+                        </div>
+                        <div>
+                            <input type="tel" name="phone" placeholder="Your Phone" class="w-full px-4 py-3 bg-blue-800 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-white placeholder-blue-300">
+                        </div>
+                        <div>
+                            <textarea name="message" placeholder="Your Message" rows="4" class="w-full px-4 py-3 bg-blue-800 border border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-white placeholder-blue-300" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition duration-300">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                            <i class="fas fa-train text-gray-900"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">भारतीय रेल</h3>
+                            <p class="text-sm text-gray-400">INDIAN RAILWAYS</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400">Fast, Affordable & Nationwide - Your Trusted Logistic Partner</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#services" class="hover:text-white transition">Services</a></li>
+                        <li><a href="calculator.html" class="hover:text-white transition">Rate Calculator</a></li>
+                        <li><a href="routes.html" class="hover:text-white transition">Route Table</a></li>
+                        <li><a href="jpp.html" class="hover:text-white transition">JPP</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Counter Booking</li>
+                        <li>Leasing Services</li>
+                        <li>Joint Parcel Product</li>
+                        <li>Kisan Rail</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Connect With Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Mysuru Division, South Western Railway. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html> 

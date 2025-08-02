@@ -1,0 +1,13 @@
+{
+  "name": "parcel_dbu",
+  "version": "1.0.0",
+  "description": "A modern, responsive website for the Mysuru Division of South Western Railway to improve parcel earnings through digital booking and tracking services.",
+  "main": "calculator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

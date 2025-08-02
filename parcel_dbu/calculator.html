@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Rate Calculator - Mysuru Division, South Western Railway</title>
+    <meta name="description" content="Calculate parcel rates based on distance and weight using official railway scale rates">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Parcel Calc">
+    <meta name="msapplication-TileColor" content="#1e40af">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Using Tailwind CSS CDN for simplicity - suitable for this project -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-900 text-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-train text-blue-900 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">भारतीय रेल</h1>
+                        <p class="text-sm text-blue-200">INDIAN RAILWAYS</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="hover:text-blue-300 transition">Home</a>
+                    <a href="index.html#services" class="hover:text-blue-300 transition">Services</a>
+                    <a href="calculator.html" class="text-blue-200 font-semibold">Rate Calculator</a>
+                    <a href="routes.html" class="hover:text-blue-300 transition">Route Table</a>
+                    <a href="jpp.html" class="hover:text-blue-300 transition">JPP</a>
+                    <a href="index.html#contact" class="hover:text-blue-300 transition">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-blue-800">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="index.html" class="block px-3 py-2 hover:bg-blue-700">Home</a>
+                <a href="index.html#services" class="block px-3 py-2 hover:bg-blue-700">Services</a>
+                <a href="calculator.html" class="block px-3 py-2 bg-blue-700 text-blue-200">Rate Calculator</a>
+                <a href="routes.html" class="block px-3 py-2 hover:bg-blue-700">Route Table</a>
+                <a href="jpp.html" class="block px-3 py-2 hover:bg-blue-700">JPP</a>
+                <a href="index.html#contact" class="block px-3 py-2 hover:bg-blue-700">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 bg-gradient-to-br from-blue-900 via-purple-900 to-blue-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                    Parcel Rate Calculator
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-200">
+                    Calculate rates based on distance and weight using official railway scale rates
+                </p>
+                <div class="bg-green-600 inline-block px-6 py-3 rounded-lg mb-8">
+                    <h2 class="text-xl font-semibold">Mysuru Division, South Western Railway</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Calculate Your Parcel Rate</h2>
+                <p class="text-xl text-gray-600">Enter distance and weight to get accurate rates for all scales</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Input Form -->
+                <div class="bg-gray-50 rounded-lg p-8 shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-6">Enter Details</h3>
+                    <form id="rate-calculator-form" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Distance (Kilometers) *</label>
+                            <input type="number" id="distance" name="distance" min="1" max="5000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter distance in kilometers" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Weight (Kilograms) *</label>
+                            <input type="number" id="weight" name="weight" min="0.1" max="10000" step="0.1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter weight in kilograms" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
+                            <select id="service-type" name="serviceType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="all">All Scales (Luggage, Premier, Rajdhani, Standard)</option>
+                                <option value="L">Luggage Scale</option>
+                                <option value="P">Premier Scale</option>
+                                <option value="R">Rajdhani Scale</option>
+                                <option value="S">Standard Scale</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg text-lg font-semibold transition duration-300">
+                            <i class="fas fa-calculator mr-2"></i>Calculate Rates
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Results Display -->
+                <div class="bg-gray-50 rounded-lg p-8 shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-6">Rate Results</h3>
+                    <div id="results-container" class="space-y-4">
+                        <div class="text-center text-gray-500 py-8">
+                            <i class="fas fa-calculator text-4xl mb-4"></i>
+                            <p>Enter distance and weight to calculate rates</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scale Information -->
+    <section class="py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Scale Information</h2>
+                <p class="text-xl text-gray-600">Understanding different parcel scales</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-white text-2xl font-bold">L</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Luggage Scale</h3>
+                        <p class="text-gray-600 mb-4">Light Parcels</p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• Small packages</li>
+                            <li>• Documents</li>
+                            <li>• Lightweight items</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-white text-2xl font-bold">P</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Premier Scale</h3>
+                        <p class="text-gray-600 mb-4">Parcels</p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• General parcels</li>
+                            <li>• Consumer goods</li>
+                            <li>• Standard shipping</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-white text-2xl font-bold">R</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Rajdhani Scale</h3>
+                        <p class="text-gray-600 mb-4">Railway Parcels</p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• Railway specific</li>
+                            <li>• Bulk shipments</li>
+                            <li>• Commercial rates</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-white text-2xl font-bold">S</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Standard Scale</h3>
+                        <p class="text-gray-600 mb-4">Special Parcels</p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li>• Special handling</li>
+                            <li>• Premium service</li>
+                            <li>• Express delivery</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">How to Use the Calculator</h2>
+                <p class="text-xl text-gray-600">Simple steps to calculate your parcel rates</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Enter Distance</h3>
+                    <p class="text-gray-600">Input the distance in kilometers between source and destination stations</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Enter Weight</h3>
+                    <p class="text-gray-600">Specify the weight of your parcel in kilograms</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Get Rates</h3>
+                    <p class="text-gray-600">View calculated rates for all applicable scales based on official railway tariffs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                            <i class="fas fa-train text-gray-900"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">भारतीय रेल</h3>
+                            <p class="text-sm text-gray-400">INDIAN RAILWAYS</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400">Fast, Affordable & Nationwide - Your Trusted Logistic Partner</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="index.html" class="hover:text-white transition">Home</a></li>
+                        <li><a href="index.html#services" class="hover:text-white transition">Services</a></li>
+                        <li><a href="index.html#booking" class="hover:text-white transition">Book Now</a></li>
+                        <li><a href="calculator.html" class="hover:text-white transition">Rate Calculator</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Counter Booking</li>
+                        <li>Leasing Services</li>
+                        <li>Joint Parcel Product</li>
+                        <li>Kisan Rail</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Connect With Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Mysuru Division, South Western Railway. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="calculator.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html> 
