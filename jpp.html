@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPP - Joint Parcel Product | South Western Railway</title>
+    <meta name="description" content="Joint Parcel Product (JPP) - Premier Scale rate + 10% of Premier Scale rate for enhanced parcel services">
+    <meta name="keywords" content="JPP, Joint Parcel Product, railway parcel, South Western Railway, Mysuru Division">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Parcel Calc">
+    <meta name="msapplication-TileColor" content="#1e40af">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Using Tailwind CSS CDN for simplicity - suitable for this project -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-train text-blue-900 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">भारतीय रेल</h1>
+                        <p class="text-sm text-blue-200">INDIAN RAILWAYS</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index.html" class="hover:text-blue-200 transition-colors">Home</a>
+                    <a href="index.html#services" class="hover:text-blue-200 transition-colors">Services</a>
+                    <a href="calculator.html" class="hover:text-blue-200 transition-colors">Rate Calculator</a>
+                    <a href="routes.html" class="hover:text-blue-200 transition-colors">Route Table</a>
+                    <a href="jpp.html" class="text-blue-200 font-semibold">JPP</a>
+                    <a href="index.html#contact" class="hover:text-blue-200 transition-colors">Contact</a>
+                </nav>
+                <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-blue-700">
+            <div class="container mx-auto px-4 py-4 space-y-4">
+                <a href="index.html" class="block hover:text-blue-200 transition-colors">Home</a>
+                <a href="index.html#services" class="block hover:text-blue-200 transition-colors">Services</a>
+                <a href="calculator.html" class="block hover:text-blue-200 transition-colors">Rate Calculator</a>
+                <a href="routes.html" class="block hover:text-blue-200 transition-colors">Route Table</a>
+                <a href="jpp.html" class="block text-blue-200 font-semibold">JPP</a>
+                <a href="index.html#contact" class="block hover:text-blue-200 transition-colors">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Joint Parcel Product (JPP)</h1>
+            <p class="text-xl text-gray-600 mb-8">Enhanced parcel service with premium features</p>
+        </section>
+
+        <!-- JPP Information -->
+        <section class="max-w-6xl mx-auto">
+            <!-- What is JPP Section -->
+            <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg shadow-md p-8 mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">What is JPP-RCS?</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-600 mb-4">🎯 Joint Parcel Product - A Synergistic Partnership</h3>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            <strong>JPP</strong> is a strategic collaboration between <strong>Indian Railways</strong> and <strong>India Post</strong> that leverages the strengths of both entities to provide efficient, end-to-end logistics solutions.
+                        </p>
+                        <div class="bg-white p-4 rounded-lg border-l-4 border-blue-500">
+                            <p class="text-sm text-blue-800">
+                                <strong>🏆 Current Status:</strong> 13 identified routes on round-trip basis<br>
+                                <strong>🚀 Service Type:</strong> Two models - SLR Model & RCS Model<br>
+                                <strong>📦 Coverage:</strong> Pan-India network with door-to-door connectivity<br>
+                                <strong>💼 Target:</strong> SMEs, e-commerce, bulk clients, and MSMEs
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-green-600 mb-4">💡 How It Works</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 rounded-full p-2 mr-3 mt-1">
+                                    <i class="fas fa-truck text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">First Mile</p>
+                                    <p class="text-sm text-gray-600">Pickup from your location to railway station</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-green-100 rounded-full p-2 mr-3 mt-1">
+                                    <i class="fas fa-train text-green-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Middle Mile</p>
+                                    <p class="text-sm text-gray-600">High-speed rail transportation</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 rounded-full p-2 mr-3 mt-1">
+                                    <i class="fas fa-shipping-fast text-purple-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Last Mile</p>
+                                    <p class="text-sm text-gray-600">Delivery from station to destination</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rate Structure Section -->
+            <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">💰 Key Features of JPP Tariff</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600 mb-4">📊 Cost Components</h3>
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                                <h4 class="font-semibold text-blue-800 mb-2">India Post Charges</h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li>• First Mile only: ₹4/kg</li>
+                                    <li>• Last Mile only: ₹4/kg</li>
+                                    <li>• Both ends: ₹6/kg</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                                <h4 class="font-semibold text-green-800 mb-2">Railway Freight</h4>
+                                <p class="text-sm text-green-700">Parcel Scale + 10% (varies by train type – R, P, or S scale)</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                                <h4 class="font-semibold text-purple-800 mb-2">Insurance</h4>
+                                <p class="text-sm text-purple-700">0.03% of consignment value + 18% GST</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-600 mb-4">🎯 Customer Benefits</h3>
+                        <div class="space-y-4">
+                            <div class="bg-yellow-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-yellow-800 mb-2">Single Point of Contact</h4>
+                                <p class="text-sm text-yellow-700">India Post handles all customer interactions</p>
+                            </div>
+                            <div class="bg-orange-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-orange-800 mb-2">Sample Costing</h4>
+                                <p class="text-sm text-orange-700">For 100 kg within city: ₹600 (Post) + Rail freight + Insurance</p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-red-800 mb-2">Enhanced Credibility</h4>
+                                <ul class="text-sm text-red-700 space-y-1">
+                                    <li>• Time-tabled trains</li>
+                                    <li>• Optimized pickup-delivery cycles</li>
+                                    <li>• Standardized rates</li>
+                                    <li>• Predictable timelines</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mysuru Division Opportunities -->
+            <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg shadow-md p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">🌟 Opportunities in Mysuru Division</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-600 mb-4">🌐 Well-Connected Network</h3>
+                        <div class="bg-white p-4 rounded-lg">
+                            <p class="text-gray-700 mb-3">Mysuru Division is strategically connected to major destinations:</p>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Bengaluru, Chennai</li>
+                                <li>• Andhra Pradesh & Telangana</li>
+                                <li>• Mumbai, Rajasthan, Delhi</li>
+                                <li>• West Bengal</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-600 mb-4">📦 Potential Cargo Types</h3>
+                        <div class="bg-white p-4 rounded-lg">
+                            <ul class="text-sm text-gray-600 space-y-2">
+                                <li class="flex items-center">
+                                    <i class="fas fa-tshirt text-blue-500 mr-2"></i>
+                                    <span>Textiles</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-seedling text-green-500 mr-2"></i>
+                                    <span>Agro products</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-shopping-cart text-purple-500 mr-2"></i>
+                                    <span>E-commerce</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-pills text-red-500 mr-2"></i>
+                                    <span>Pharma</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-industry text-orange-500 mr-2"></i>
+                                    <span>Industrial Exports</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+                    <p class="text-yellow-800 font-semibold">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        <strong>Key Advantage:</strong> Underutilized SLRs — Scope for expansion and growth
+                    </p>
+                </div>
+            </div>
+
+
+
+            <!-- Two Models Section -->
+            <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">🚂 Two Models of JPP Implementation</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="border-2 border-blue-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-blue-600 mb-4">📦 JPP - SLR Model</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-train text-blue-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Mode</p>
+                                    <p class="text-sm text-gray-600">Space in SLRs of passenger trains</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-calendar text-blue-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Flexibility</p>
+                                    <p class="text-sm text-gray-600">High - runs daily with passenger services</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-calculator text-blue-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Cost Structure</p>
+                                    <p class="text-sm text-gray-600">Parcel Scale + 10% (SLR space)</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-users text-blue-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Ideal For</p>
+                                    <p class="text-sm text-gray-600">SMEs, intercity e-com, perishable short hauls</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-2 border-green-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-green-600 mb-4">🚛 JPP - RCS Model</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-truck text-green-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Mode</p>
+                                    <p class="text-sm text-gray-600">Full Parcel Vans in time-tabled parcel trains</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-calendar text-green-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Flexibility</p>
+                                    <p class="text-sm text-gray-600">Medium - based on route demand and schedule</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-calculator text-green-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Cost Structure</p>
+                                    <p class="text-sm text-gray-600">Full van lease or Railways parcel tariff</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-users text-green-500 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold text-gray-800">Ideal For</p>
+                                    <p class="text-sm text-gray-600">Aggregated bulk movement, inter-state logistics</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How JPP Works Section -->
+            <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-md p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">🔄 How JPP Works – Roles & Flow</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-truck text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2 text-center">First Mile</h3>
+                        <p class="text-sm text-gray-600 text-center mb-3"><strong>Handled By:</strong> India Post</p>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Pickup from customer's doorstep</li>
+                            <li>• Transport to originating railway station</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-train text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2 text-center">Middle Mile</h3>
+                        <p class="text-sm text-gray-600 text-center mb-3"><strong>Handled By:</strong> Indian Railways</p>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Transit through time-tabled trains</li>
+                            <li>• Movement in sealed, secure boxes (SLRs)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shipping-fast text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2 text-center">Last Mile</h3>
+                        <p class="text-sm text-gray-600 text-center mb-3"><strong>Handled By:</strong> India Post</p>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Delivery from destination station</li>
+                            <li>• To consignee's doorstep</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-headset text-orange-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2 text-center">Customer Support</h3>
+                        <p class="text-sm text-gray-600 text-center mb-3"><strong>Handled By:</strong> India Post</p>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Single point of contact for booking</li>
+                            <li>• Tracking and issue resolution</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shield-alt text-red-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800 mb-2 text-center">Safety & Coverage</h3>
+                        <p class="text-sm text-gray-600 text-center mb-3"><strong>Handled By:</strong> Both Agencies</p>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Sealed movement</li>
+                            <li>• Third-party insurance at 0.03% of declared value + 18% GST</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">South Western Railway</h3>
+                    <p class="text-gray-300">Mysuru Division Parcel Services</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="calculator.html" class="text-gray-300 hover:text-white transition-colors">Rate Calculator</a></li>
+                        <li><a href="routes.html" class="text-gray-300 hover:text-white transition-colors">Route Table</a></li>
+                        <li><a href="jpp.html" class="text-gray-300 hover:text-white transition-colors">JPP</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <p class="text-gray-300">Mysuru Division</p>
+                    <p class="text-gray-300">South Western Railway</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 South Western Railway. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html> 
