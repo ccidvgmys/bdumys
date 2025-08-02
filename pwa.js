@@ -81,8 +81,12 @@ class ParcelCalculatorPWA {
             this.deferredPrompt = e;
             window.deferredPrompt = e;
             
-            // DISABLED: No automatic notification
-            // this.showInstallNotification();
+            // Show install notification (but only once per session)
+            const notificationShown = sessionStorage.getItem('pwa_notification_shown');
+            if (!notificationShown) {
+                this.showInstallNotification();
+                sessionStorage.setItem('pwa_notification_shown', 'true');
+            }
             
             // Update any UI to notify the user they can install the PWA
             this.updateInstallUI();
@@ -104,9 +108,42 @@ class ParcelCalculatorPWA {
     }
 
     trackUserEngagement() {
-        // DISABLED: No automatic install prompts
-        // Only manual installation through button is allowed
-        console.log('Automatic install prompts disabled - use manual install button only');
+        let hasInteracted = false;
+        let interactionCount = 0;
+        let promptShownCount = 0;
+        const maxPrompts = 2; // Show prompt maximum 2 times
+        
+        // Check if user has already dismissed install prompt recently
+        const lastDismissed = localStorage.getItem('pwa_install_dismissed');
+        const now = Date.now();
+        const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        
+        if (lastDismissed && (now - parseInt(lastDismissed)) < oneDay) {
+            console.log('Install prompt dismissed recently, skipping...');
+            return;
+        }
+        
+        const interactionEvents = ['click', 'touchstart', 'scroll', 'keydown', 'mousemove'];
+        
+        const handleInteraction = () => {
+            if (!hasInteracted) {
+                hasInteracted = true;
+                console.log('User started interacting with the page');
+            }
+            
+            interactionCount++;
+            
+            // Show install prompt after sufficient interaction (but only 1-2 times)
+            if (interactionCount >= 8 && this.deferredPrompt && !this.isInstalled && promptShownCount < maxPrompts) {
+                promptShownCount++;
+                console.log(`Showing install prompt (${promptShownCount}/${maxPrompts})`);
+                this.tryShowInstallPrompt();
+            }
+        };
+        
+        interactionEvents.forEach(event => {
+            document.addEventListener(event, handleInteraction, { passive: true });
+        });
     }
 
     tryShowInstallPrompt() {
