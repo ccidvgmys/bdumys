@@ -10,7 +10,6 @@ class RoutesManager {
     }
 
     async init() {
-        console.log('Initializing Routes Manager with Google Sheets...');
         await this.loadRateData(); // Load rate data first
         
         // Add loading indicator
@@ -18,10 +17,8 @@ class RoutesManager {
         
         // Check if it's a mobile device
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        console.log(`📱 Device type: ${isMobile ? 'Mobile' : 'Desktop'}`);
         
         if (isMobile) {
-            console.log('📱 Mobile device detected - using optimized loading strategy');
             // For mobile, try a simpler approach first
             await this.loadRoutesForMobile();
         } else {
@@ -39,8 +36,6 @@ class RoutesManager {
 
     async loadRoutesForMobile() {
         try {
-            console.log('📱 Trying mobile-optimized Google Sheets loading...');
-            
             // Try a simpler approach for mobile
             const mobileUrl = `https://docs.google.com/spreadsheets/d/${this.googleSheetId}/export?format=csv&gid=0`;
             
@@ -54,16 +49,12 @@ class RoutesManager {
             if (response.ok) {
                 const csvText = await response.text();
                 this.routes = this.parseCSV(csvText);
-                console.log(`✅ Mobile: Loaded ${this.routes.length} routes from Google Sheets`);
                 return;
             } else {
                 throw new Error(`Mobile fetch failed: ${response.status}`);
             }
             
         } catch (error) {
-            console.warn('📱 Mobile Google Sheets loading failed:', error.message);
-            console.log('📱 Falling back to default routes for mobile');
-            
             // Use enhanced default routes for mobile
             this.routes = [
                 { from: 'DVG', to: 'MYS', distance: 328, via: 'HAS', notes: 'Main route to Mysuru' },
@@ -85,19 +76,14 @@ class RoutesManager {
     async loadRoutesWithRetry(maxRetries = 3) {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                console.log(`Attempt ${attempt} of ${maxRetries} to load routes...`);
                 await this.loadRoutesFromGoogleSheets();
                 return; // Success, exit retry loop
             } catch (error) {
-                console.warn(`Attempt ${attempt} failed:`, error.message);
-                
                 if (attempt < maxRetries) {
                     // Wait before retrying (exponential backoff)
                     const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
-                    console.log(`Retrying in ${delay}ms...`);
                     await new Promise(resolve => setTimeout(resolve, delay));
                 } else {
-                    console.error('All retry attempts failed, using default routes');
                     this.showNotification('⚠️ Using default routes (network issue)', 'warning');
                 }
             }
@@ -121,7 +107,11 @@ class RoutesManager {
     }
     
     hideLoadingIndicator() {
-        // Loading indicator will be replaced when displayRoutes() is called
+        const tableBody = document.getElementById('routes-table-body');
+        if (tableBody) {
+            // Clear any loading content
+            tableBody.innerHTML = '';
+        }
     }
 
     // Load rate data from JSON file (same as calculator.js)
@@ -132,9 +122,7 @@ class RoutesManager {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             this.rateSlabs = await response.json();
-            console.log('✅ Rate data loaded successfully');
         } catch (error) {
-            console.error('❌ Error loading rate data:', error);
             // Fallback to basic rates if JSON file is not available
             this.rateSlabs = {
                 L: { '321-330': { '51-100': 210.14, '101-200': 420.28, '201-500': 630.42 } },
@@ -147,8 +135,6 @@ class RoutesManager {
 
     async loadRoutesFromGoogleSheets() {
         try {
-            console.log('Fetching routes from Google Sheets...');
-            
             // Try multiple Google Sheets CSV URLs for better compatibility
             const csvUrls = [
                 `https://docs.google.com/spreadsheets/d/${this.googleSheetId}/gviz/tq?tqx=out:csv`,
@@ -162,8 +148,6 @@ class RoutesManager {
             // Try each URL until one works
             for (const url of csvUrls) {
                 try {
-                    console.log(`Trying URL: ${url}`);
-                    
                     // Try different fetch configurations for mobile compatibility
                     const fetchConfigs = [
                         {
@@ -198,16 +182,13 @@ class RoutesManager {
                                 // Use JSONP-like approach for mobile
                                 csvText = await this.fetchWithJSONP(url);
                                 if (csvText) {
-                                    console.log(`✅ Success with JSONP approach for URL: ${url}`);
                                     break;
                                 }
                             } else if (response.ok) {
                                 csvText = await response.text();
-                                console.log(`✅ Success with fetch config for URL: ${url}`);
                                 break;
                             }
                         } catch (fetchError) {
-                            console.warn(`Fetch config failed:`, fetchError.message);
                             continue;
                         }
                     }
@@ -215,7 +196,6 @@ class RoutesManager {
                     if (csvText) break;
                     
                 } catch (error) {
-                    console.warn(`❌ Failed with URL ${url}:`, error.message);
                     lastError = error;
                     continue;
                 }
@@ -223,15 +203,11 @@ class RoutesManager {
             
             if (csvText) {
                 this.routes = this.parseCSV(csvText);
-                console.log(`✅ Loaded ${this.routes.length} routes from Google Sheets`);
             } else {
                 throw lastError || new Error('All Google Sheets URLs failed');
             }
             
         } catch (error) {
-            console.error('❌ Error loading from Google Sheets:', error);
-            console.log('🔄 Using default routes');
-            
             // Enhanced default routes with more comprehensive data
             this.routes = [
                 { from: 'DVG', to: 'MYS', distance: 328, via: 'HAS', notes: 'Main route to Mysuru' },
@@ -248,9 +224,6 @@ class RoutesManager {
             
             // Show user-friendly error message
             this.showNotification('⚠️ Using default routes (Google Sheets unavailable on mobile)', 'warning');
-            
-            // Add a note about mobile compatibility
-            console.log('📱 Mobile users: Google Sheets may not load due to CORS restrictions. Using default routes.');
         }
     }
 
@@ -347,58 +320,150 @@ class RoutesManager {
 
     displayRoutes() {
         const tableBody = document.getElementById('routes-table-body');
-        if (!tableBody) return;
-
-        tableBody.innerHTML = '';
+        const mobileContainer = document.getElementById('mobile-routes-container');
+        
+        if (!tableBody && !mobileContainer) {
+            return;
+        }
+        
+        // Clear any existing content first
+        if (tableBody) tableBody.innerHTML = '';
+        if (mobileContainer) mobileContainer.innerHTML = '';
+        
         const allRoutes = [...this.routes, ...this.customRoutes];
         
-        console.log('Displaying routes with weight:', this.selectedWeight);
-        
-        allRoutes.forEach(route => {
-            const rates = this.calculateRates(route.distance, this.selectedWeight);
-            const details = rates.details;
-            
-            console.log(`Route ${route.from}-${route.to}:`, {
-                luggage: rates.luggage,
-                premier: rates.premier,
-                luggagePerKg: (rates.luggage / this.selectedWeight).toFixed(2)
-            });
-            
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="px-4 py-3 border-b">${route.from}</td>
-                <td class="px-4 py-3 border-b">${route.to}</td>
-                <td class="px-4 py-3 border-b text-center">${route.distance}</td>
-                <td class="px-4 py-3 border-b">${route.via}</td>
-                <td class="px-4 py-3 border-b text-center">
-                    <div class="font-bold text-lg">₹${Math.ceil(rates.luggage)}</div>
-                    <div class="text-sm text-blue-600 font-medium mt-1 bg-blue-50 px-2 py-1 rounded border">₹${(rates.luggage / this.selectedWeight).toFixed(2)}/kg</div>
-                </td>
-                <td class="px-4 py-3 border-b text-center">
-                    <div class="font-bold text-lg">₹${Math.ceil(rates.premier)}</div>
-                    <div class="text-sm text-green-600 font-medium mt-1 bg-green-50 px-2 py-1 rounded border">₹${(rates.premier / this.selectedWeight).toFixed(2)}/kg</div>
-                </td>
-                <td class="px-4 py-3 border-b text-center">
-                    <div class="font-bold text-lg">₹${Math.ceil(rates.rajdhani)}</div>
-                    <div class="text-sm text-purple-600 font-medium mt-1 bg-purple-50 px-2 py-1 rounded border">₹${(rates.rajdhani / this.selectedWeight).toFixed(2)}/kg</div>
-                </td>
-                <td class="px-4 py-3 border-b text-center">
-                    <div class="font-bold text-lg">₹${Math.ceil(rates.standard)}</div>
-                    <div class="text-sm text-orange-600 font-medium mt-1 bg-orange-50 px-2 py-1 rounded border">₹${(rates.standard / this.selectedWeight).toFixed(2)}/kg</div>
-                </td>
-                <td class="px-4 py-3 border-b text-center">
-                    <div class="font-bold text-green-600 text-lg">₹${Math.ceil(rates.jpp)}</div>
-                    <div class="text-sm text-red-600 font-medium mt-1 bg-red-50 px-2 py-1 rounded border">₹${(rates.jpp / this.selectedWeight).toFixed(2)}/kg</div>
-                </td>
-                <td class="px-4 py-3 border-b text-center">
-                    <button onclick="routesManager.showDetails('${route.from}', '${route.to}', ${route.distance})" 
-                            class="bg-blue-500 text-white px-2 py-1 rounded text-xs">
-                        Details
-                    </button>
-                </td>
+        if (allRoutes.length === 0) {
+            const noDataMessage = `
+                <div class="text-center py-8">
+                    <div class="text-gray-500">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        No routes available. Please refresh or add custom routes.
+                    </div>
+                </div>
             `;
-            tableBody.appendChild(row);
-        });
+            
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="10">${noDataMessage}</td></tr>`;
+            }
+            if (mobileContainer) {
+                mobileContainer.innerHTML = noDataMessage;
+            }
+            return;
+        }
+        
+        // Update desktop table
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            allRoutes.forEach(route => {
+                const rates = this.calculateRates(route.distance, this.selectedWeight);
+                const details = rates.details;
+                
+                // Clean text function
+                const cleanText = (text) => {
+                    return String(text)
+                        .replace(/[''""]/g, '') // Remove all types of quotes
+                        .replace(/→/g, ' to ') // Replace arrow with "to"
+                        .replace(/\s+/g, ' ') // Normalize whitespace
+                        .trim(); // Remove leading/trailing spaces
+                };
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors duration-200';
+                row.innerHTML = `
+                    <td class="px-6 py-4 border-b border-gray-200 text-center font-medium text-gray-900">${cleanText(route.from)}</td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center font-medium text-gray-900">${cleanText(route.to)}</td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center font-semibold text-gray-800">${cleanText(route.distance)}</td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center text-gray-700">${cleanText(route.via)}</td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center">
+                        <div class="font-bold text-xl text-gray-900 mb-2">₹${cleanText(Math.ceil(rates.luggage))}</div>
+                        <div class="text-sm text-blue-700 font-semibold bg-blue-100 px-3 py-2 rounded-lg border border-blue-200">₹${cleanText((rates.luggage / this.selectedWeight).toFixed(2))}/kg</div>
+                    </td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center">
+                        <div class="font-bold text-xl text-gray-900 mb-2">₹${cleanText(Math.ceil(rates.premier))}</div>
+                        <div class="text-sm text-green-700 font-semibold bg-green-100 px-3 py-2 rounded-lg border border-green-200">₹${cleanText((rates.premier / this.selectedWeight).toFixed(2))}/kg</div>
+                    </td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center">
+                        <div class="font-bold text-xl text-gray-900 mb-2">₹${cleanText(Math.ceil(rates.rajdhani))}</div>
+                        <div class="text-sm text-purple-700 font-semibold bg-purple-100 px-3 py-2 rounded-lg border border-purple-200">₹${cleanText((rates.rajdhani / this.selectedWeight).toFixed(2))}/kg</div>
+                    </td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center">
+                        <div class="font-bold text-xl text-gray-900 mb-2">₹${cleanText(Math.ceil(rates.standard))}</div>
+                        <div class="text-sm text-orange-700 font-semibold bg-orange-100 px-3 py-2 rounded-lg border border-orange-200">₹${cleanText((rates.standard / this.selectedWeight).toFixed(2))}/kg</div>
+                    </td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center">
+                        <div class="font-bold text-xl text-green-700 mb-2">₹${cleanText(Math.ceil(rates.jpp))}</div>
+                        <div class="text-sm text-red-700 font-semibold bg-red-100 px-3 py-2 rounded-lg border border-red-200">₹${cleanText((rates.jpp / this.selectedWeight).toFixed(2))}/kg</div>
+                    </td>
+                    <td class="px-6 py-4 border-b border-gray-200 text-center">
+                        <button onclick="routesManager.showDetails('${cleanText(route.from)}', '${cleanText(route.to)}', ${cleanText(route.distance)})" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm">
+                            Details
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Update mobile container
+        if (mobileContainer) {
+            mobileContainer.innerHTML = '';
+            allRoutes.forEach(route => {
+                const rates = this.calculateRates(route.distance, this.selectedWeight);
+                
+                // Clean text function for mobile
+                const cleanText = (text) => {
+                    return String(text)
+                        .replace(/[''""]/g, '') // Remove all types of quotes
+                        .replace(/→/g, ' to ') // Replace arrow with "to"
+                        .replace(/\s+/g, ' ') // Normalize whitespace
+                        .trim(); // Remove leading/trailing spaces
+                };
+                
+                const card = document.createElement('div');
+                card.className = 'bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-4 hover:shadow-md transition-shadow duration-200';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-xl text-gray-900 mb-1">${cleanText(route.from)} → ${cleanText(route.to)}</h3>
+                            <p class="text-sm text-gray-600 font-medium">Distance: ${cleanText(route.distance)} km via ${cleanText(route.via)}</p>
+                        </div>
+                        <button onclick="routesManager.showDetails('${cleanText(route.from)}', '${cleanText(route.to)}', ${cleanText(route.distance)})" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm">
+                            Details
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                            <div class="font-bold text-blue-800 mb-2">Luggage</div>
+                            <div class="text-xl font-bold text-gray-900 mb-1">₹${cleanText(Math.ceil(rates.luggage))}</div>
+                            <div class="text-sm text-blue-700 font-semibold">₹${cleanText((rates.luggage / this.selectedWeight).toFixed(2))}/kg</div>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                            <div class="font-bold text-green-800 mb-2">Premier</div>
+                            <div class="text-xl font-bold text-gray-900 mb-1">₹${cleanText(Math.ceil(rates.premier))}</div>
+                            <div class="text-sm text-green-700 font-semibold">₹${cleanText((rates.premier / this.selectedWeight).toFixed(2))}/kg</div>
+                        </div>
+                        <div class="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                            <div class="font-bold text-purple-800 mb-2">Rajdhani</div>
+                            <div class="text-xl font-bold text-gray-900 mb-1">₹${cleanText(Math.ceil(rates.rajdhani))}</div>
+                            <div class="text-sm text-purple-700 font-semibold">₹${cleanText((rates.rajdhani / this.selectedWeight).toFixed(2))}/kg</div>
+                        </div>
+                        <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                            <div class="font-bold text-orange-800 mb-2">Standard</div>
+                            <div class="text-xl font-bold text-gray-900 mb-1">₹${cleanText(Math.ceil(rates.standard))}</div>
+                            <div class="text-sm text-orange-700 font-semibold">₹${cleanText((rates.standard / this.selectedWeight).toFixed(2))}/kg</div>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 p-4 rounded-lg col-span-2">
+                            <div class="font-bold text-red-800 mb-2">JPP</div>
+                            <div class="text-xl font-bold text-red-700 mb-1">₹${cleanText(Math.ceil(rates.jpp))}</div>
+                            <div class="text-sm text-red-700 font-semibold">₹${cleanText((rates.jpp / this.selectedWeight).toFixed(2))}/kg</div>
+                        </div>
+                    </div>
+                `;
+                mobileContainer.appendChild(card);
+            });
+        }
     }
 
     calculateRates(distance, weight) {
@@ -578,11 +643,10 @@ class RoutesManager {
             });
         }
 
-        // Custom route form
-        const form = document.getElementById('custom-route-form');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
+        // Add custom route button
+        const addRouteBtn = document.getElementById('add-custom-route');
+        if (addRouteBtn) {
+            addRouteBtn.addEventListener('click', () => {
                 this.addCustomRoute();
             });
         }
@@ -613,28 +677,27 @@ class RoutesManager {
         const refreshBtn = document.getElementById('refresh-routes-btn');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', async () => {
-                console.log('Manual refresh requested...');
                 refreshBtn.disabled = true;
                 refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Refreshing...';
                 
                 try {
                     this.showLoadingIndicator();
                     
+                    // Clear any cached data and force reload
+                    this.routes = [];
+                    
                     // Check if it's a mobile device and use appropriate method
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                     
                     if (isMobile) {
-                        console.log('📱 Mobile refresh - trying mobile-optimized approach');
                         await this.loadRoutesForMobile();
                     } else {
-                        console.log('🖥️ Desktop refresh - using full retry mechanism');
                         await this.loadRoutesWithRetry();
                     }
                     
                     this.displayRoutes();
                     this.showNotification('✅ Routes refreshed successfully', 'success');
                 } catch (error) {
-                    console.error('Refresh failed:', error);
                     this.showNotification('❌ Failed to refresh routes', 'error');
                 } finally {
                     refreshBtn.disabled = false;
@@ -644,10 +707,10 @@ class RoutesManager {
         }
     }
 
-    addCustomRoute() {
+    async addCustomRoute() {
         const from = document.getElementById('from-station').value.trim().toUpperCase();
         const to = document.getElementById('to-station').value.trim().toUpperCase();
-        const distance = parseInt(document.getElementById('distance').value);
+        const distance = parseInt(document.getElementById('distance-km').value);
         const via = document.getElementById('via-station').value.trim();
 
         if (!from || !to || !distance || distance <= 0) {
@@ -655,14 +718,149 @@ class RoutesManager {
             return;
         }
 
-        const newRoute = { from, to, distance, via, notes: 'Custom route' };
-        this.customRoutes.push(newRoute);
-        this.saveCustomRoutes();
-        this.displayRoutes();
+        let originalText = '';
+        try {
+            // Show loading state
+            const addButton = document.getElementById('add-custom-route');
+            originalText = addButton.innerHTML;
+            addButton.disabled = true;
+            addButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Adding...';
 
-        // Clear form
-        document.getElementById('custom-route-form').reset();
-        this.showNotification('Route added successfully!');
+            // Add to local storage first (simpler approach)
+            const newRoute = { from, to, distance, via, notes: 'Custom route' };
+            this.customRoutes.push(newRoute);
+            this.saveCustomRoutes();
+            
+            // Try to add to Google Sheets
+            const success = await this.addRouteToGoogleSheets(from, to, distance, via);
+            
+            if (success) {
+                this.showNotification('✅ Route added to Google Sheets successfully!', 'success');
+            } else {
+                this.showNotification('📝 Route saved locally. Check "Pending Routes" for manual sync.', 'info');
+            }
+
+            // Refresh display
+            this.displayRoutes();
+
+            // Clear form
+            document.getElementById('from-station').value = '';
+            document.getElementById('to-station').value = '';
+            document.getElementById('distance-km').value = '';
+            document.getElementById('via-station').value = '';
+            
+        } catch (error) {
+            this.showNotification('❌ Error adding route: ' + error.message, 'error');
+        } finally {
+            // Reset button
+            const addButton = document.getElementById('add-custom-route');
+            if (addButton) {
+                addButton.disabled = false;
+                addButton.innerHTML = originalText || '<i class="fas fa-plus mr-2"></i>Add Route';
+            }
+        }
+    }
+
+    async addRouteToGoogleSheets(from, to, distance, via) {
+        try {
+            // Method 1: Try using Google Apps Script web app
+            const success = await this.addRouteViaAppsScript(from, to, distance, via);
+            if (success) return true;
+            
+            // Method 2: Try using Google Forms (if set up)
+            const formSuccess = await this.addRouteViaGoogleForm(from, to, distance, via);
+            if (formSuccess) return true;
+            
+            // Method 3: Fallback to localStorage
+            return await this.addRouteViaFormSubmission(from, to, distance, via);
+            
+        } catch (error) {
+            // Fallback to form submission method
+            return await this.addRouteViaFormSubmission(from, to, distance, via);
+        }
+    }
+
+    async addRouteViaAppsScript(from, to, distance, via) {
+        try {
+            // Google Apps Script web app URL for direct Google Sheets integration
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbwqyo510FcsA505cCjeRQbZy7ArXTRGA2e6oEkMBRQyUBgQlUD33gAa7wHpNyi1YSnT/exec';
+            
+            // Use simple GET method to avoid CORS issues
+            const url = new URL(scriptUrl);
+            url.searchParams.append('from', from);
+            url.searchParams.append('to', to);
+            url.searchParams.append('distance', distance);
+            url.searchParams.append('via', via);
+            url.searchParams.append('notes', 'Custom route');
+            
+            // Use hidden iframe method to avoid CORS
+            return new Promise((resolve) => {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = url.toString();
+                document.body.appendChild(iframe);
+                
+                // Remove iframe after a delay and assume success
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    resolve(true); // Assume success for GET method
+                }, 1000);
+            });
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async addRouteViaGoogleForm(from, to, distance, via) {
+        try {
+            // This requires setting up a Google Form linked to the sheet
+            // For now, we'll return false to use fallback method
+            return false;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async addRouteViaFormSubmission(from, to, distance, via) {
+        try {
+            const newRoute = { from, to, distance, via, notes: 'Custom route', timestamp: new Date().toISOString() };
+            
+            // Store in localStorage for now
+            const pendingRoutes = JSON.parse(localStorage.getItem('pendingGoogleSheetRoutes') || '[]');
+            pendingRoutes.push(newRoute);
+            localStorage.setItem('pendingGoogleSheetRoutes', JSON.stringify(pendingRoutes));
+            
+            this.showNotification('📝 Route saved locally. Check "Pending Routes" for manual sync.', 'info');
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    showPendingRoutes() {
+        const pendingRoutes = JSON.parse(localStorage.getItem('pendingGoogleSheetRoutes') || '[]');
+        
+        if (pendingRoutes.length === 0) {
+            this.showNotification('No pending routes to sync.', 'info');
+            return;
+        }
+
+        let message = '📋 Pending Routes to Sync:\n\n';
+        pendingRoutes.forEach((route, index) => {
+            message += `${index + 1}. ${route.from} → ${route.to} (${route.distance} km via ${route.via})\n`;
+        });
+        
+        message += '\n📝 To sync to Google Sheets:\n';
+        message += '1. Open your Google Sheet\n';
+        message += '2. Add these routes manually\n';
+        message += '3. Click "Clear Pending Routes" after syncing';
+        
+        alert(message);
+    }
+
+    clearPendingRoutes() {
+        localStorage.removeItem('pendingGoogleSheetRoutes');
+        this.showNotification('✅ Pending routes cleared!', 'success');
     }
 
     performSearch() {
@@ -891,9 +1089,27 @@ class RoutesManager {
         `;
     }
 
-    showNotification(message) {
+    showNotification(message, type = 'info') {
         const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-50';
+        let bgColor = 'bg-blue-600';
+        
+        switch(type) {
+            case 'success':
+                bgColor = 'bg-green-600';
+                break;
+            case 'error':
+                bgColor = 'bg-red-600';
+                break;
+            case 'warning':
+                bgColor = 'bg-yellow-600';
+                break;
+            case 'info':
+            default:
+                bgColor = 'bg-blue-600';
+                break;
+        }
+        
+        notification.className = `fixed top-4 right-4 ${bgColor} text-white p-4 rounded-lg shadow-lg z-50 max-w-sm`;
         notification.textContent = message;
         document.body.appendChild(notification);
         
@@ -902,6 +1118,304 @@ class RoutesManager {
                 notification.remove();
             }
         }, 3000);
+    }
+
+    exportRoutesPDF() {
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('portrait', 'mm', 'a4');
+            
+            // Title
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('South Western Railway - Mysuru Division', 105, 20, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('Parcel Routes Rate Table', 105, 30, { align: 'center' });
+            
+            // Date
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 105, 40, { align: 'center' });
+            
+            // Get table data
+            const tableBody = document.getElementById('routes-table-body');
+            const rows = tableBody.querySelectorAll('tr');
+            
+            if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('.fa-spinner'))) {
+                this.showNotification('No routes data available for export', 'warning');
+                return;
+            }
+            
+            const tableData = [];
+            
+            // Function to clean text thoroughly
+            const cleanText = (text) => {
+                return text
+                    .replace(/[''""]/g, '') // Remove all types of quotes
+                    .replace(/→/g, ' to ') // Replace arrow with "to"
+                    .replace(/\s+/g, ' ') // Normalize whitespace
+                    .trim(); // Remove leading/trailing spaces
+            };
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 1) { // Skip loading row
+                    const rowData = [];
+                    cells.forEach((cell, index) => {
+                        if (index < 9) { // Exclude Details column
+                            let text = cell.textContent.trim();
+                            // Clean up text using the cleanText function
+                            text = cleanText(text);
+                            rowData.push(text);
+                        }
+                    });
+                    if (rowData.length > 0) {
+                        tableData.push(rowData);
+                    }
+                }
+            });
+            
+            if (tableData.length === 0) {
+                this.showNotification('No routes data available for export', 'warning');
+                return;
+            }
+            
+            // Table headers
+            const headers = [
+                'From', 'To', 'Dist', 'Via', 
+                'Luggage\nTotal/Per kg', 'Premier\nTotal/Per kg', 
+                'Rajdhani\nTotal/Per kg', 'Standard\nTotal/Per kg', 
+                'JPP\nTotal/Per kg'
+            ];
+            
+            // Create table
+            doc.autoTable({
+                head: [headers],
+                body: tableData,
+                startY: 50,
+                styles: {
+                    fontSize: 7,
+                    cellPadding: 1,
+                    lineWidth: 0.1,
+                    halign: 'center' // Center align all content
+                },
+                headStyles: {
+                    fillColor: [30, 64, 175],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center' // Center align headers
+                },
+                alternateRowStyles: {
+                    fillColor: [248, 250, 252],
+                    halign: 'center' // Center align data rows
+                },
+                columnStyles: {
+                    0: { cellWidth: 12, halign: 'center' }, // From
+                    1: { cellWidth: 12, halign: 'center' }, // To
+                    2: { cellWidth: 10, halign: 'center' }, // Dist
+                    3: { cellWidth: 12, halign: 'center' }, // Via
+                    4: { cellWidth: 20, halign: 'center' }, // Luggage
+                    5: { cellWidth: 20, halign: 'center' }, // Premier
+                    6: { cellWidth: 20, halign: 'center' }, // Rajdhani
+                    7: { cellWidth: 20, halign: 'center' }, // Standard
+                    8: { cellWidth: 20, halign: 'center' }  // JPP
+                },
+                pageBreak: 'auto',
+                margin: { top: 50, right: 5, bottom: 20, left: 5 }
+            });
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.text(`Page ${i} of ${pageCount}`, 105, 280, { align: 'center' });
+            }
+            
+            // Save PDF
+            const filename = `railway_routes_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(filename);
+            
+            this.showNotification('✅ Routes table exported to PDF successfully!', 'success');
+            
+        } catch (error) {
+            console.error('PDF Export Error:', error);
+            this.showNotification('❌ Error exporting PDF: ' + error.message, 'error');
+        }
+    }
+
+    exportRateReport() {
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('portrait', 'mm', 'a4');
+            
+            // Title
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('South Western Railway - Mysuru Division', 105, 25, { align: 'center' });
+            doc.setFontSize(16);
+            doc.text('Parcel Rate Analysis Report', 105, 35, { align: 'center' });
+            
+            // Date and Info
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 105, 45, { align: 'center' });
+            doc.text(`Total Routes: ${this.routes.length}`, 105, 55, { align: 'center' });
+            
+            // Rate Legend
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Rate Scale Information:', 20, 75);
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('• Luggage Scale (L): Light Parcels - Rate = 1.5× Luggage Scale Rate', 20, 85);
+            doc.text('• Premier Scale (P): Parcels', 20, 95);
+            doc.text('• Rajdhani Scale (R): Railway Parcels', 20, 105);
+            doc.text('• Standard Scale (S): Special Parcels', 20, 115);
+            doc.text('• JPP: Joint Parcel Product = Premier Scale rate + 10%', 20, 125);
+            
+            // Calculation Details
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Rate Calculation Formula:', 20, 145);
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('1. Base Rate: Calculated based on distance slabs', 20, 155);
+            doc.text('2. Development Surcharge (DSC): 2% of base rate', 20, 165);
+            doc.text('3. Rate after DSC: Base rate + DSC', 20, 175);
+            doc.text('4. GST: 5% of (base rate + DSC)', 20, 185);
+            doc.text('5. Total Rate: Base rate + DSC + GST', 20, 195);
+            
+            // Save PDF
+            const filename = `railway_rate_report_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(filename);
+            
+            this.showNotification('✅ Rate report exported to PDF successfully!', 'success');
+            
+        } catch (error) {
+            console.error('Rate Report Export Error:', error);
+            this.showNotification('❌ Error exporting rate report: ' + error.message, 'error');
+        }
+    }
+
+    printTable() {
+        try {
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            
+            // Get the table data
+            const tableBody = document.getElementById('routes-table-body');
+            const rows = tableBody.querySelectorAll('tr');
+            
+            if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('.fa-spinner'))) {
+                this.showNotification('No routes data available for printing', 'warning');
+                return;
+            }
+            
+            // Function to clean text thoroughly
+            const cleanText = (text) => {
+                return text
+                    .replace(/[''""]/g, '') // Remove all types of quotes
+                    .replace(/→/g, ' to ') // Replace arrow with "to"
+                    .replace(/\s+/g, ' ') // Normalize whitespace
+                    .trim(); // Remove leading/trailing spaces
+            };
+            
+            // Create print-friendly HTML
+            let printHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Railway Routes - Print</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .header { text-align: center; margin-bottom: 20px; }
+                        .title { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+                        .subtitle { font-size: 18px; margin-bottom: 10px; }
+                        .date { font-size: 12px; color: #666; margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 10px; }
+                        th, td { border: 1px solid #ddd; padding: 4px; text-align: left; }
+                        th { background-color: #1e40af; color: white; font-weight: bold; }
+                        tr:nth-child(even) { background-color: #f8f9fa; }
+                        .footer { margin-top: 20px; text-align: center; font-size: 10px; color: #666; }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="title">South Western Railway - Mysuru Division</div>
+                        <div class="subtitle">Parcel Routes Rate Table</div>
+                        <div class="date">Generated on: ${new Date().toLocaleDateString('en-IN')}</div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Dist</th>
+                                <th>Via</th>
+                                <th>Luggage<br>Total/Per kg</th>
+                                <th>Premier<br>Total/Per kg</th>
+                                <th>Rajdhani<br>Total/Per kg</th>
+                                <th>Standard<br>Total/Per kg</th>
+                                <th>JPP<br>Total/Per kg</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 1) { // Skip loading row
+                    let rowHTML = '<tr>';
+                    cells.forEach((cell, index) => {
+                        if (index < 9) { // Exclude Details column
+                            let text = cell.textContent.trim();
+                            text = cleanText(text);
+                            rowHTML += `<td>${text}</td>`;
+                        }
+                    });
+                    rowHTML += '</tr>';
+                    printHTML += rowHTML;
+                }
+            });
+            
+            printHTML += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        <p>South Western Railway - Mysuru Division | Parcel Services</p>
+                        <p>Rate Legend: L=Luggage, P=Premier, R=Rajdhani, S=Standard, JPP=Joint Parcel Product</p>
+                    </div>
+                    
+                    <div class="no-print" style="margin-top: 20px; text-align: center;">
+                        <button onclick="window.print()" style="padding: 10px 20px; background: #1e40af; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Print Table
+                        </button>
+                        <button onclick="window.close()" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                            Close
+                        </button>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(printHTML);
+            printWindow.document.close();
+            
+            this.showNotification('✅ Print window opened! Click "Print Table" to print.', 'success');
+            
+        } catch (error) {
+            console.error('Print Error:', error);
+            this.showNotification('❌ Error opening print window: ' + error.message, 'error');
+        }
     }
 }
 

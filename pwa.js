@@ -148,33 +148,36 @@ class ParcelCalculatorPWA {
 
     tryShowInstallPrompt() {
         if (this.deferredPrompt && !this.isInstalled) {
-          
-            
-            // Show the install prompt
-            this.deferredPrompt.prompt();
-            
-            // Wait for the user to respond to the prompt
-            this.deferredPrompt.userChoice.then((choiceResult) => {
+            try {
+                // Show the install prompt
+                this.deferredPrompt.prompt();
                 
-                
-                if (choiceResult.outcome === 'accepted') {
-                   
-                    this.showNotification('Installing app...', 'info');
-                } else {
-                    // User dismissed the prompt - remember this for 24 hours
-                    localStorage.setItem('pwa_install_dismissed', Date.now().toString());
-                    console.log('User dismissed install prompt, will not show again for 24 hours');
-                }
-                
-                // Clear the deferredPrompt
+                // Wait for the user to respond to the prompt
+                this.deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        this.showNotification('Installing app...', 'info');
+                    } else {
+                        // User dismissed the prompt - remember this for 24 hours
+                        localStorage.setItem('pwa_install_dismissed', Date.now().toString());
+                        console.log('User dismissed install prompt, will not show again for 24 hours');
+                    }
+                    
+                    // Clear the deferredPrompt
+                    this.deferredPrompt = null;
+                    window.deferredPrompt = null;
+                    
+                    // Hide install UI
+                    this.hideInstallUI();
+                }).catch((error) => {
+                    // Handle any errors in the user choice
+                    this.deferredPrompt = null;
+                    window.deferredPrompt = null;
+                });
+            } catch (error) {
+                // Handle any errors in the prompt
                 this.deferredPrompt = null;
                 window.deferredPrompt = null;
-                
-                // Hide install UI
-                this.hideInstallUI();
-            });
-        } else {
-           
+            }
         }
     }
 
