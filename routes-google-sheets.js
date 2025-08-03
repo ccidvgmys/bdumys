@@ -16,8 +16,18 @@ class RoutesManager {
         // Add loading indicator
         this.showLoadingIndicator();
         
-        // Try to load routes with retry mechanism
-        await this.loadRoutesWithRetry();
+        // Check if it's a mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        console.log(`📱 Device type: ${isMobile ? 'Mobile' : 'Desktop'}`);
+        
+        if (isMobile) {
+            console.log('📱 Mobile device detected - using optimized loading strategy');
+            // For mobile, try a simpler approach first
+            await this.loadRoutesForMobile();
+        } else {
+            // For desktop, use the full retry mechanism
+            await this.loadRoutesWithRetry();
+        }
         
         this.loadCustomRoutes();
         this.displayRoutes();
@@ -25,6 +35,51 @@ class RoutesManager {
         
         // Hide loading indicator
         this.hideLoadingIndicator();
+    }
+
+    async loadRoutesForMobile() {
+        try {
+            console.log('📱 Trying mobile-optimized Google Sheets loading...');
+            
+            // Try a simpler approach for mobile
+            const mobileUrl = `https://docs.google.com/spreadsheets/d/${this.googleSheetId}/export?format=csv&gid=0`;
+            
+            const response = await fetch(mobileUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'text/csv,text/plain,*/*'
+                }
+            });
+            
+            if (response.ok) {
+                const csvText = await response.text();
+                this.routes = this.parseCSV(csvText);
+                console.log(`✅ Mobile: Loaded ${this.routes.length} routes from Google Sheets`);
+                return;
+            } else {
+                throw new Error(`Mobile fetch failed: ${response.status}`);
+            }
+            
+        } catch (error) {
+            console.warn('📱 Mobile Google Sheets loading failed:', error.message);
+            console.log('📱 Falling back to default routes for mobile');
+            
+            // Use enhanced default routes for mobile
+            this.routes = [
+                { from: 'DVG', to: 'MYS', distance: 328, via: 'HAS', notes: 'Main route to Mysuru' },
+                { from: 'DVG', to: 'BLR', distance: 250, via: 'YPR', notes: 'Bangalore route' },
+                { from: 'DVG', to: 'MNG', distance: 180, via: 'HAS', notes: 'Mangalore route' },
+                { from: 'DVG', to: 'HUB', distance: 420, via: 'YPR', notes: 'Hubli route' },
+                { from: 'DVG', to: 'BJP', distance: 380, via: 'HAS', notes: 'Bijapur route' },
+                { from: 'DVG', to: 'BGM', distance: 150, via: 'HAS', notes: 'Belgaum route' },
+                { from: 'DVG', to: 'UDY', distance: 200, via: 'YPR', notes: 'Udupi route' },
+                { from: 'DVG', to: 'KAR', distance: 120, via: 'HAS', notes: 'Karwar route' },
+                { from: 'DVG', to: 'GOK', distance: 90, via: 'HAS', notes: 'Gokarna route' },
+                { from: 'DVG', to: 'KUM', distance: 280, via: 'YPR', notes: 'Kumta route' }
+            ];
+            
+            this.showNotification('📱 Using default routes (mobile optimized)', 'info');
+        }
     }
     
     async loadRoutesWithRetry(maxRetries = 3) {
@@ -109,22 +164,56 @@ class RoutesManager {
                 try {
                     console.log(`Trying URL: ${url}`);
                     
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        mode: 'cors',
-                        headers: {
-                            'Accept': 'text/csv,text/plain,*/*',
-                            'Cache-Control': 'no-cache'
+                    // Try different fetch configurations for mobile compatibility
+                    const fetchConfigs = [
+                        {
+                            method: 'GET',
+                            mode: 'cors',
+                            headers: {
+                                'Accept': 'text/csv,text/plain,*/*',
+                                'Cache-Control': 'no-cache'
+                            }
+                        },
+                        {
+                            method: 'GET',
+                            mode: 'no-cors', // Try no-cors for mobile
+                            headers: {
+                                'Accept': 'text/csv,text/plain,*/*'
+                            }
+                        },
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'text/csv,text/plain,*/*'
+                            }
                         }
-                    });
+                    ];
                     
-                    if (response.ok) {
-                        csvText = await response.text();
-                        console.log(`✅ Success with URL: ${url}`);
-                        break;
-                    } else {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    for (const config of fetchConfigs) {
+                        try {
+                            const response = await fetch(url, config);
+                            
+                            // For no-cors mode, we can't read the response, so we'll use a different approach
+                            if (config.mode === 'no-cors') {
+                                // Use JSONP-like approach for mobile
+                                csvText = await this.fetchWithJSONP(url);
+                                if (csvText) {
+                                    console.log(`✅ Success with JSONP approach for URL: ${url}`);
+                                    break;
+                                }
+                            } else if (response.ok) {
+                                csvText = await response.text();
+                                console.log(`✅ Success with fetch config for URL: ${url}`);
+                                break;
+                            }
+                        } catch (fetchError) {
+                            console.warn(`Fetch config failed:`, fetchError.message);
+                            continue;
+                        }
                     }
+                    
+                    if (csvText) break;
+                    
                 } catch (error) {
                     console.warn(`❌ Failed with URL ${url}:`, error.message);
                     lastError = error;
@@ -143,18 +232,75 @@ class RoutesManager {
             console.error('❌ Error loading from Google Sheets:', error);
             console.log('🔄 Using default routes');
             
-            // Enhanced default routes
+            // Enhanced default routes with more comprehensive data
             this.routes = [
-                { from: 'DVG', to: 'MYS', distance: 328, via: 'HAS', notes: 'Main route' },
+                { from: 'DVG', to: 'MYS', distance: 328, via: 'HAS', notes: 'Main route to Mysuru' },
                 { from: 'DVG', to: 'BLR', distance: 250, via: 'YPR', notes: 'Bangalore route' },
                 { from: 'DVG', to: 'MNG', distance: 180, via: 'HAS', notes: 'Mangalore route' },
                 { from: 'DVG', to: 'HUB', distance: 420, via: 'YPR', notes: 'Hubli route' },
-                { from: 'DVG', to: 'BJP', distance: 380, via: 'HAS', notes: 'Bijapur route' }
+                { from: 'DVG', to: 'BJP', distance: 380, via: 'HAS', notes: 'Bijapur route' },
+                { from: 'DVG', to: 'BGM', distance: 150, via: 'HAS', notes: 'Belgaum route' },
+                { from: 'DVG', to: 'UDY', distance: 200, via: 'YPR', notes: 'Udupi route' },
+                { from: 'DVG', to: 'KAR', distance: 120, via: 'HAS', notes: 'Karwar route' },
+                { from: 'DVG', to: 'GOK', distance: 90, via: 'HAS', notes: 'Gokarna route' },
+                { from: 'DVG', to: 'KUM', distance: 280, via: 'YPR', notes: 'Kumta route' }
             ];
             
             // Show user-friendly error message
-            this.showNotification('⚠️ Using default routes (Google Sheets unavailable)', 'warning');
+            this.showNotification('⚠️ Using default routes (Google Sheets unavailable on mobile)', 'warning');
+            
+            // Add a note about mobile compatibility
+            console.log('📱 Mobile users: Google Sheets may not load due to CORS restrictions. Using default routes.');
         }
+    }
+
+    // JSONP-like approach for mobile compatibility
+    async fetchWithJSONP(url) {
+        return new Promise((resolve, reject) => {
+            try {
+                // Create a script tag to load the CSV as text
+                const script = document.createElement('script');
+                const callbackName = 'csvCallback_' + Date.now();
+                
+                // Set up a global callback
+                window[callbackName] = function(data) {
+                    resolve(data);
+                    delete window[callbackName];
+                    document.head.removeChild(script);
+                };
+                
+                // Set timeout
+                setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                        document.head.removeChild(script);
+                        reject(new Error('JSONP timeout'));
+                    }
+                }, 10000);
+                
+                // Try to load as text using a different approach
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.setRequestHeader('Accept', 'text/csv,text/plain,*/*');
+                
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        resolve(xhr.responseText);
+                    } else {
+                        reject(new Error(`XHR failed: ${xhr.status}`));
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    reject(new Error('XHR network error'));
+                };
+                
+                xhr.send();
+                
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     parseCSV(csvText) {
@@ -441,10 +587,26 @@ class RoutesManager {
             });
         }
 
-        // Search
-        const search = document.getElementById('route-search');
-        if (search) {
-            search.addEventListener('input', (e) => this.searchRoutes(e.target.value));
+        // Search functionality
+        const searchFrom = document.getElementById('search-from');
+        const searchTo = document.getElementById('search-to');
+        const searchBtn = document.getElementById('search-routes');
+        const clearSearchBtn = document.getElementById('clear-search');
+        
+        if (searchFrom) {
+            searchFrom.addEventListener('input', () => this.performSearch());
+        }
+        
+        if (searchTo) {
+            searchTo.addEventListener('input', () => this.performSearch());
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => this.performSearch());
+        }
+        
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', () => this.clearSearch());
         }
 
         // Refresh routes button
@@ -457,7 +619,18 @@ class RoutesManager {
                 
                 try {
                     this.showLoadingIndicator();
-                    await this.loadRoutesWithRetry();
+                    
+                    // Check if it's a mobile device and use appropriate method
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    
+                    if (isMobile) {
+                        console.log('📱 Mobile refresh - trying mobile-optimized approach');
+                        await this.loadRoutesForMobile();
+                    } else {
+                        console.log('🖥️ Desktop refresh - using full retry mechanism');
+                        await this.loadRoutesWithRetry();
+                    }
+                    
                     this.displayRoutes();
                     this.showNotification('✅ Routes refreshed successfully', 'success');
                 } catch (error) {
@@ -490,6 +663,38 @@ class RoutesManager {
         // Clear form
         document.getElementById('custom-route-form').reset();
         this.showNotification('Route added successfully!');
+    }
+
+    performSearch() {
+        const searchFrom = document.getElementById('search-from')?.value.toLowerCase() || '';
+        const searchTo = document.getElementById('search-to')?.value.toLowerCase() || '';
+        
+        const rows = document.querySelectorAll('#routes-table-body tr');
+        
+        rows.forEach(row => {
+            const from = row.cells[0]?.textContent.toLowerCase() || '';
+            const to = row.cells[1]?.textContent.toLowerCase() || '';
+            
+            const fromMatches = !searchFrom || from.includes(searchFrom);
+            const toMatches = !searchTo || to.includes(searchTo);
+            
+            const matches = fromMatches && toMatches;
+            row.style.display = matches ? '' : 'none';
+        });
+    }
+    
+    clearSearch() {
+        const searchFrom = document.getElementById('search-from');
+        const searchTo = document.getElementById('search-to');
+        
+        if (searchFrom) searchFrom.value = '';
+        if (searchTo) searchTo.value = '';
+        
+        // Show all rows
+        const rows = document.querySelectorAll('#routes-table-body tr');
+        rows.forEach(row => {
+            row.style.display = '';
+        });
     }
 
     searchRoutes(query) {
